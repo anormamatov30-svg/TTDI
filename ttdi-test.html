@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTDI Test — Paxta, Ipak, Jun, Kanop</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --accent: #e8a020;
+    --accent2: #58a6ff;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --success: #3fb950;
+    --error: #f85149;
+    --v1: #e8a020;
+    --v2: #58a6ff;
+    --v3: #bc8cff;
+    --v4: #3fb950;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    padding: 40px 0 30px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 8px;
+  }
+
+  /* Variant selector */
+  .variant-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .selector-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .variant-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .variant-btn {
+    width: 90px; height: 90px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--muted);
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .variant-btn .v-label {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .variant-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: 10px;
+  }
+
+  .variant-btn[data-v="1"]::before { background: radial-gradient(circle at center, rgba(232,160,32,0.15), transparent); }
+  .variant-btn[data-v="2"]::before { background: radial-gradient(circle at center, rgba(88,166,255,0.15), transparent); }
+  .variant-btn[data-v="3"]::before { background: radial-gradient(circle at center, rgba(188,140,255,0.15), transparent); }
+  .variant-btn[data-v="4"]::before { background: radial-gradient(circle at center, rgba(63,185,80,0.15), transparent); }
+
+  .variant-btn[data-v="1"]:hover, .variant-btn[data-v="1"].active { border-color: var(--v1); color: var(--v1); }
+  .variant-btn[data-v="2"]:hover, .variant-btn[data-v="2"].active { border-color: var(--v2); color: var(--v2); }
+  .variant-btn[data-v="3"]:hover, .variant-btn[data-v="3"].active { border-color: var(--v3); color: var(--v3); }
+  .variant-btn[data-v="4"]:hover, .variant-btn[data-v="4"].active { border-color: var(--v4); color: var(--v4); }
+
+  .variant-btn:hover::before, .variant-btn.active::before { opacity: 1; }
+
+  .variant-btn.active { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+  .start-btn {
+    display: none;
+    margin: 0 auto;
+    padding: 14px 40px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .start-btn:hover { background: #f5b840; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(232,160,32,0.3); }
+  .start-btn.show { display: block; animation: fadeUp 0.3s ease both; }
+
+  /* Quiz section */
+  #quiz-section { display: none; }
+  #quiz-section.show { display: block; }
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 16px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .quiz-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .variant-badge {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 6px;
+    background: rgba(232,160,32,0.1);
+    border: 1px solid rgba(232,160,32,0.3);
+    color: var(--accent);
+  }
+
+  .variant-badge[data-v="2"] { background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.3); color: var(--v2); }
+  .variant-badge[data-v="3"] { background: rgba(188,140,255,0.1); border-color: rgba(188,140,255,0.3); color: var(--v3); }
+  .variant-badge[data-v="4"] { background: rgba(63,185,80,0.1); border-color: rgba(63,185,80,0.3); color: var(--v4); }
+
+  .progress-info {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .progress-info strong { color: var(--text); }
+
+  .progress-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .score-display {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    color: var(--success);
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.35s ease both;
+  }
+
+  .q-number {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .q-number::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .q-text {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) { .options { grid-template-columns: 1fr; } }
+
+  .option-btn {
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .option-letter {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    min-width: 20px;
+    padding-top: 1px;
+    transition: color 0.2s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent2);
+    background: rgba(88,166,255,0.06);
+    transform: translateY(-1px);
+  }
+
+  .option-btn:hover:not(:disabled) .option-letter { color: var(--accent2); }
+
+  .option-btn.correct {
+    border-color: var(--success) !important;
+    background: rgba(63,185,80,0.1) !important;
+  }
+  .option-btn.correct .option-letter { color: var(--success); }
+
+  .option-btn.wrong {
+    border-color: var(--error) !important;
+    background: rgba(248,81,73,0.1) !important;
+  }
+  .option-btn.wrong .option-letter { color: var(--error); }
+
+  .option-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    animation: fadeUp 0.2s ease both;
+  }
+
+  .feedback.correct { background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); color: var(--success); }
+  .feedback.wrong { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: #ff8b84; }
+  .feedback.show { display: block; }
+
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    gap: 12px;
+  }
+
+  .nav-btn {
+    padding: 12px 28px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 8px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .nav-btn:hover:not(:disabled) { border-color: var(--text); color: var(--text); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .nav-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+  .nav-btn.primary:hover:not(:disabled) { background: #f5b840; }
+
+  /* Results */
+  #result-section { display: none; }
+  #result-section.show { display: block; }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--v3));
+  }
+
+  .result-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
+
+  .result-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .result-score {
+    font-family: 'Oswald', sans-serif;
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin: 24px 0 16px;
+  }
+
+  .result-sub { color: var(--muted); font-size: 16px; margin-bottom: 32px; }
+
+  .result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+  .stat.ok .stat-num { color: var(--success); }
+  .stat.fail .stat-num { color: var(--error); }
+
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .result-btn {
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 2px solid;
+  }
+
+  .result-btn.primary { background: var(--accent); border-color: var(--accent); color: #000; }
+  .result-btn.primary:hover { background: #f5b840; transform: translateY(-2px); }
+  .result-btn.secondary { background: transparent; border-color: var(--border); color: var(--muted); }
+  .result-btn.secondary:hover { border-color: var(--text); color: var(--text); }
+
+  /* Review mode */
+  .review-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .review-item.review-correct { border-left: 3px solid var(--success); }
+  .review-item.review-wrong { border-left: 3px solid var(--error); }
+
+  .review-q { font-weight: 600; font-size: 15px; margin-bottom: 10px; }
+  .review-answers { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .review-correct-ans { color: var(--success); }
+  .review-wrong-ans { color: var(--error); text-decoration: line-through; opacity: 0.7; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">TTDI — Textiil Texnologiyalari</div>
+    <h1>Test <span>Savollari</span></h1>
+    <p class="subtitle">Paxta · Ipak · Jun · Kanop — 4 ta Variant · 25 savol</p>
+  </header>
+
+  <!-- Selector -->
+  <div id="selector-section">
+    <div class="variant-selector">
+      <div class="selector-label">Variantni tanlang</div>
+      <div class="variant-btns">
+        <button class="variant-btn" data-v="1" onclick="selectVariant(1)">
+          <span>I</span>
+          <span class="v-label">Variant</span>
+        </button>
+        <button class="variant-btn" data-v="2" onclick="selectVariant(2)">
+          <span>II</span>
+          <span class="v-label">Variant</span>
+        </button>
+        <button class="variant-btn" data-v="3" onclick="selectVariant(3)">
+          <span>III</span>
+          <span class="v-label">Variant</span>
+        </button>
+        <button class="variant-btn" data-v="4" onclick="selectVariant(4)">
+          <span>IV</span>
+          <span class="v-label">Variant</span>
+        </button>
+      </div>
+      <button class="start-btn" id="start-btn" onclick="startQuiz()">▶ TESTNI BOSHLASH</button>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz-section">
+    <div class="quiz-header">
+      <div class="quiz-info">
+        <span class="variant-badge" id="variant-badge">I Variant</span>
+        <div>
+          <div class="progress-info">Savol <strong id="q-current">1</strong> / <strong id="q-total">25</strong></div>
+          <div class="progress-bar-wrap" style="margin-top:6px; width:160px;">
+            <div class="progress-bar" id="progress-bar" style="width:4%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="score-display" id="score-display">✓ 0</div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-number" id="q-number">Savol 01</div>
+      <div class="q-text" id="q-text">Savol matni...</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="nav-btn" id="prev-btn" onclick="prevQ()" disabled>← Orqaga</button>
+      <button class="nav-btn primary" id="next-btn" onclick="nextQ()" disabled>Keyingi →</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="result-section">
+    <div class="result-card">
+      <span class="result-emoji" id="result-emoji">🎯</span>
+      <div class="result-title" id="result-title">Natija</div>
+      <div class="result-score" id="result-score">0%</div>
+      <div class="result-sub" id="result-sub">25 ta savoldan</div>
+      <div class="result-stats">
+        <div class="stat ok">
+          <div class="stat-num" id="stat-correct">0</div>
+          <div class="stat-label">To'g'ri</div>
+        </div>
+        <div class="stat fail">
+          <div class="stat-num" id="stat-wrong">0</div>
+          <div class="stat-label">Noto'g'ri</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="stat-total">25</div>
+          <div class="stat-label">Jami</div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="result-btn primary" onclick="retakeQuiz()">🔄 Qayta urinish</button>
+        <button class="result-btn secondary" onclick="showReview()">📋 Ko'rib chiqish</button>
+        <button class="result-btn secondary" onclick="backToMenu()">🏠 Bosh sahifa</button>
+      </div>
+    </div>
+
+    <div id="review-list" class="hidden" style="margin-top:30px;"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ALL QUESTIONS (100 total — 4 variants of 25 each)
+// ============================================================
+const ALL_QUESTIONS = [
+  // --- PAXTA (1–30)
+  { q:"Hindiston, Xitoy va Misrda ip tayyorlash va mato to'qish qachondan ma'lum bo'lgan?", a:"Miloddan avval bir necha asr ilgari", distractors:["Miloddan keyin I asrda","Miloddan avval V ming yillikda","O'rta asrlarda, XIII asr"] },
+  { q:"O'zbekiston hududida paxtachilik bilan shug'ullanish qadimdan ma'lumligini qaysi topilma tasdiqlaydi?", a:"Farg'ona vodiysi ko'mirga aylangan chigit va paxta tolasi", distractors:["Samarqand yaqinidagi bronza davri buyumlari","Toshkent havzasida topilgan mato qoldiqlari","Amudaryo bo'yida topilgan tosh mehnatkashliklari"] },
+  { q:"Aleksandr Makedonskiy qo'shinlari qayerda paxta dalalarini birinchi marta ko'rishgan?", a:"Hindiston darysi vodiysida", distractors:["Nil darysi qirg'oqlarida","Frot darysi bo'ylarida","O'rta Osiyo dasht yerlarda"] },
+  { q:"Paxta tozalash zavodi birinchi marta qachon va qaysi shahar qurilgan?", a:"1880-yil Toshkent va Farg'ona shahri", distractors:["1860-yil Samarqandda","1900-yil Buxoroda","1875-yil Qo'qon va Namanganda"] },
+  { q:"G'o'za o'simligi qaysi botanik avlodga mansub hisoblanadi?", a:"Gossypium", distractors:["Hibiscus","Malvaceae","Abelmoschus"] },
+  { q:"G'o'za avlodi qaysi o'simliklar oilasiga kiradi?", a:"Gulharidoshlar", distractors:["Dudmonalar","Qo'ng'iroqgullar","Kungaboqardoshlar"] },
+  { q:"G'o'zaning ildiz sistemasi qanday ko'rinishga ega?", a:"O'q ildizli", distractors:["Saçaqli ildizli","To'lqinli ildizli","Yoysimon ildizli"] },
+  { q:"G'o'za poyasining balandligi vegetatsiya davri oxirida qanchaga etadi?", a:"1–1.5 m, ba'zan 2 m ham uchraydi", distractors:["0.5–0.8 m","3–4 m","0.3–0.5 m"] },
+  { q:"G'o'zaning guli qanday jinsli hisoblanadi?", a:"Ikki jinsli", distractors:["Bir jinsli (erkak)","Bir jinsli (urg'ochi)","Jinsiz gul"] },
+  { q:"G'o'za ko'sagi necha kunda eng katta holatga etadi?", a:"20–25 kunda", distractors:["10–12 kunda","30–40 kunda","50–60 kunda"] },
+  { q:"Xirzutum turining ko'saklari necha chanoqli bo'ladi?", a:"4–5 chanoqli", distractors:["2–3 chanoqli","6–7 chanoqli","8–10 chanoqli"] },
+  { q:"Barbadenze turining ko'saklari necha chanoqli bo'ladi?", a:"3, ba'zan 4 chanoqli", distractors:["5–6 chanoqli","2 chanoqli","7–8 chanoqli"] },
+  { q:"Pishgan chigit mag'zida necha foizgacha yog' bo'ladi?", a:"24–30%", distractors:["10–15%","40–50%","5–8%"] },
+  { q:"Chigit tarkibidagi zaharli polifinol modda nima deb ataladi?", a:"Gossipol", distractors:["Tanin","Solanin","Lignin"] },
+  { q:"Uzunligi 20 mm dan kalta bo'lgan paxta tolasi nima deyiladi?", a:"Kalta tola", distractors:["Momiq","Uzun tola","Linter"] },
+  { q:"Uzunligi 5 mm dan kalta bo'lgan chigit tuklari nima deyiladi?", a:"Momiq lint (kalta momiq)", distractors:["Kalta tola","Qo'ng'ir tola","Shtapel"] },
+  { q:"G'o'zaning eng xavfli bakterial kasalligi qaysi?", a:"Gommoz", distractors:["Fuzarioz so'lish","Verticillez so'lish","Makrosporioz"] },
+  { q:"Paxta tolasi necha turga (sortga) bo'linadi?", a:"9 tipga", distractors:["5 tipga","12 tipga","3 tipga"] },
+  { q:"Tolaning etuklik koeffitsienti maksimal qanchaga teng bo'ladi?", a:"2.0–2.5 (yetilgan hisoblanadi)", distractors:["1.0–1.2","3.5–4.0","0.5–0.8"] },
+  { q:"Ochilgan chanoqlardagi paxtani terish uchun qaysi mashina qo'llaniladi?", a:"Paxta terish mashinasi (MX-1.8)", distractors:["Kombayн ПХ-1.8","Traktor-shkala DH-2","SKO-3 mashina"] },
+  { q:"Paxta terish mashinasining bunker qismi qanday vazifani bajaradi?", a:"Terilgan paxtani vaqtincha yig'adi va saqlaydi", distractors:["Paxtani jinlaydi","Namlikni o'lchaydi","Poyasini uzadi"] },
+  { q:"Ko'sak terish mashinalari qanday markada ishlab chiqariladi?", a:"SKO, XKO yoki XK markada", distractors:["MX, DX markada","PK, TK markada","BR, XT markada"] },
+  { q:"Paxta joylanadigan g'aram maydonlari erdan necha sm baland bo'lishi kerak?", a:"30–40 sm", distractors:["10–15 sm","60–80 sm","5–8 sm"] },
+  { q:"Rasmiy g'aram maydonchasining standart o'lchami qancha?", a:"25×14 m", distractors:["30×20 m","10×10 m","50×25 m"] },
+  { q:"Paxta g'aramlangandan so'ng 10–15 kunda qancha cho'kadi?", a:"0.5–1.0 m", distractors:["2–3 m","0.1–0.2 m","3–5 m"] },
+  // --- PAXTA 2 (26–50)
+  { q:"G'aram ichidagi tunnelning balandligi kamida necha metr bo'lishi kerak?", a:"1.5–1.8 m", distractors:["0.8–1.0 m","2.5–3.0 m","0.5–0.6 m"] },
+  { q:"Hozirgi vaqtda paxtani quritishning necha xil usuli mavjud?", a:"2 xil", distractors:["3 xil","5 xil","4 xil"] },
+  { q:"Paxta quritish barabani qanday markada ko'p ishlatiladi?", a:"2SB-10 yoki SBO markali", distractors:["DX-20 markali","PK-15 markali","GS-8 markali"] },
+  { q:"Paxta tarkibidagi og'ir aralashmalar deganda nima tushuniladi?", a:"Tosh, kesak, tuproq, metallar parchalari", distractors:["Namlik va bug'","Kimyoviy moddalar","Poya va barglar"] },
+  { q:"Paxtani mayda iflosliklardan tozalash uchun qaysi agregat ishlatiladi?", a:"SS-15A separatori", distractors:["MT-100-K agregati","DK-20 separatori","BX-10 agregat"] },
+  { q:"Jinlash jarayonining asosiy vazifasi nimadan iborat?", a:"Tolani chigitdan ajratish", distractors:["Paxtani quritish","Tolani presslaш","Namlikni o'lchash"] },
+  { q:"Ingichka tolali paxta qaysi turdagi jinlarda ishlanadi?", a:"Valikli jinlash", distractors:["Arrali jinlash","Disk jinlash","Qaytaruvchi jinlash"] },
+  { q:"Arrali jinlarda asosiy ish organi nima hisoblanadi?", a:"Arra jinlari", distractors:["Valik (rolik)","Rotor","Tezlatgich"] },
+  { q:"Jinlash jarayonida paydo bo'ladigan nuqson qaysi?", a:"Tolaning uzilishi, tuguncha hosil bo'lishi", distractors:["Namlik oshishi","Tolaning qorayishi","Chigit qalinlashishi"] },
+  { q:"Chigitdan momiq (lint) ajratish jarayoni nima deyiladi?", a:"Linterlash", distractors:["Jinlash","Presslaш","Karbonizatsiya"] },
+  { q:"Linterlash mashinasida jami nechta arra bo'ladi?", a:"90–130 ta", distractors:["20–30 ta","200–300 ta","50–60 ta"] },
+  { q:"Paxta tolasini presslashdan maqsad nima?", a:"Hajmini kamaytirish, ortish, yuklash va tashishga qulay qilish", distractors:["Tolani tozalash","Namlikni oshirish","Tolani ranglaш"] },
+  { q:"Tayyor paxta toyining og'irligi o'rtacha qancha bo'ladi?", a:"Standart bo'yicha 200–215 kg gacha", distractors:["50–60 kg","400–500 kg","10–15 kg"] },
+  { q:"Paxta tolasining asosiy kimyoviy tarkibi nimadan iborat?", a:"Tsellyuloza", distractors:["Lignin","Protein","Starch (kraxmal)"] },
+  { q:"G'o'za barglari nima uchun defoliatsiya qilinadi?", a:"Oson terish uchun va ko'saklarning bir tekis ochilishi", distractors:["O'simlikni kasalliklardan himoya uchun","Suv sarfini kamaytirish uchun","Ildizni mustahkamlash uchun"] },
+  { q:"Paxta tolasining shtapel uzunligi nima?", a:"Tolaning o'rtacha uzunligi", distractors:["Tolaning maksimal uzunligi","Tolaning minimal uzunligi","Bir tutam tola og'irligi"] },
+  { q:"Paxta tarkibidagi namlik me'yordan oshsa nima bo'ladi?", a:"O'z-o'zidan qiziydi va chiriydi", distractors:["Tolasi uzayadi","Sifati yaxshilanadi","Ranglanadi"] },
+  { q:"Chigitli paxtaning namligini aniqlashda namuna necha gramm olinadi?", a:"40 g", distractors:["100 g","10 g","500 g"] },
+  { q:"Paxta tayyorlov punktlarida nima uchun laboratoriya bor?", a:"Paxta navi, namligi va sifatini aniqlash uchun", distractors:["Paxta zararkunandasini aniqlash uchun","Tarozi tekshirish uchun","Mashina ta'mirlash uchun"] },
+  { q:"Paxta tolasi sifatini belgilovchi asosiy ko'rsatkich nima?", a:"Uzunligi, pishiqligi va yetilganligi", distractors:["Rangi va hidi","Og'irligi va zichligi","Namlik va harorat"] },
+  { q:"Chigit qobig'ining qalinligi o'rtacha qancha bo'ladi?", a:"0.3–0.5 mm", distractors:["1–2 mm","0.05–0.1 mm","3–4 mm"] },
+  { q:"G'o'za bargining shakli qanday ko'rinishda bo'ladi?", a:"Panjasimon-bo'lakli", distractors:["Oval shaklli","Uzun nayza shaklli","Uchburchak shaklli"] },
+  { q:"Paxta xom ashyosi zavodga qanday etkazib beriladi?", a:"Avtopayt va telejkalarda", distractors:["Konveyyer orqali","Poyezd bilan","Gidravlik quvur orqali"] },
+  { q:"Paxta tozalash tsexiga kiruvchi paxtaning namligi qancha?", a:"8–10%", distractors:["20–25%","2–3%","15–18%"] },
+  { q:"Paxta tolasini tozalash samaradorligi uch bosqichda necha foiz?", a:"85–90%", distractors:["50–60%","95–99%","30–40%"] },
+  // --- IPAK (51–70)
+  { q:"Ipak qurti o'z hayotida necha bosqichni o'taydi?", a:"4 bosqichdan", distractors:["2 bosqichdan","6 bosqichdan","3 bosqichdan"] },
+  { q:"Ipak qurti faqat qaysi bosqichda ovqatlanadi?", a:"Lichenka (qurtcha) bosqichida", distractors:["G'umbak bosqichida","Kapalak bosqichida","Tuxum bosqichida"] },
+  { q:"Pilla qobig'i asosan qaysi moddadan iborat?", a:"Fibroin va seritsin", distractors:["Keratin va kollagen","Tsellyuloza va lignin","Chitin va gliserin"] },
+  { q:"Pilladagi seritsin moddasi necha foizni tashkil etadi?", a:"20–30%", distractors:["5–10%","50–60%","1–3%"] },
+  { q:"Pillani chuvishdan oldin nima uchun bug'lanadi?", a:"Seritsinni yumshatish uchun", distractors:["Mikroblarni o'ldirish uchun","Og'irligini oshirish uchun","Rangini o'zgartirish uchun"] },
+  { q:"Pillakashlik avtomatining markasi qanday bo'ladi?", a:"KMS-10 yoki SK-4m", distractors:["MX-1.8 yoki DX-20","PK-15 yoki TK-30","GS-8 yoki BR-5"] },
+  { q:"Dukurma pilla nima degani?", a:"2 ta g'umbak bor (ikki qurt bir pillada)", distractors:["Pilla teshilgan","Pilla mog'orlagan","Pilla ezilgan"] },
+  { q:"Ipak tolasining chiziqli zichligi nima bilan o'lchanadi?", a:"Teks bilan", distractors:["Gramm bilan","Metr bilan","Dyuym bilan"] },
+  { q:"Pilla qobig'idagi ipak tolasining uzunligi o'rtacha qancha?", a:"600–1200 m", distractors:["100–200 m","3000–5000 m","10–50 m"] },
+  { q:"Pillani saralashda 'brak' pilla deb nimaga aytiladi?", a:"Chuvishga yaroqsiz: ezilgan, mog'orlagan yoki teshilgan", distractors:["Og'irligi kam bo'lgan pilla","Rangi och bo'lgan pilla","Kichik o'lchamli pilla"] },
+  { q:"Ipak qurti tuxumi (urug'i) nima deb ataladi?", a:"Grena", distractors:["Lichenka","Kokon","Krisan"] },
+  { q:"Pillani chuvishda nechta pilla ipagi qo'shib chuviladi?", a:"5–8 ta", distractors:["2–3 ta","20–30 ta","1 ta"] },
+  { q:"Pillakashlik fabrikasining asosiy mahsuloti nima?", a:"Xom ipak", distractors:["Ipak gaz","Ipak tola (sun'iy)","Pilla mag'zi"] },
+  { q:"Linterlash jarayonidan keyin olingan mahsulot nima?", a:"Momiq (lint)", distractors:["Xom ipak","Chigit yog'i","G'o'zapoya"] },
+  { q:"Gidravlik press qanday kuch bilan paxtani siqadi?", a:"Yuqori bosim kuchi bilan", distractors:["Tortish kuchi bilan","Elektr kuchi bilan","Kimyoviy reaksiya kuchi bilan"] },
+  { q:"Paxta zavodlarida paxtani tashish uchun nima ishlatiladi?", a:"Pnevmotransport", distractors:["Konveyyer lenta","Yelkun","Gidravlik nasos"] },
+  { q:"Paxtani iflosliklardan tozalash samaradorligi nima?", a:"Tozalangan ifloslik foizi", distractors:["Paxta og'irligi/km","Soatlik ishlov miqdori","Tola uzunligi o'rtachasi"] },
+  { q:"Oliy navli paxta tolasi qanday rangda bo'ladi?", a:"Oqartus oq", distractors:["Sariq-jigarrang","Kulrang","To'q yashil"] },
+  { q:"Paxta tolasining pishiqligi nima bilan bog'liq?", a:"Yetilgan darajasi bilan", distractors:["Uzunligi bilan","Namligi bilan","Rangi bilan"] },
+  { q:"Jinlashdan keyingi chigit qayerga yuboriladi?", a:"Yog'-moy korxonalariga", distractors:["Kimyo zavodlariga","Qog'oz fabrikalariga","Oziq-ovqat zavodlariga"] },
+  // --- JUN (71–85)
+  { q:"Jun tolalari kelib chiqishiga ko'ra qaysi turga kiradi?", a:"Tabiiy tola", distractors:["Sun'iy tola","Sintetik tola","Mineral tola"] },
+  { q:"Junni iflosliklardan tozalash necha xil usulda bo'ladi?", a:"2 xil", distractors:["4 xil","6 xil","3 xil"] },
+  { q:"Jun tolasi kesimi necha qatlamdan iborat?", a:"3 qatlam", distractors:["1 qatlam","5 qatlam","2 qatlam"] },
+  { q:"Mayin jun tolasining qalinligi necha mikron bo'ladi?", a:"30 mikron", distractors:["5 mikron","100 mikron","200 mikron"] },
+  { q:"Junni bahorda katta tutamda olingan massasi nima deyiladi?", a:"Runo (jun qirqimi)", distractors:["Shtapel","Grena","Flece"] },
+  { q:"Jun tarkibidagi namlikni o'lchovchi asbob nima?", a:"Gigrometr", distractors:["Dinamometr","Barometr","Termometr"] },
+  { q:"Junni yuvish uchun necha qatlamli (qozonli) agregat ishlatiladi?", a:"3–5 qavatli", distractors:["1 qavatli","8–10 qavatli","2 qavatli"] },
+  { q:"Junni yuvishda suvning harorati o'rtacha necha daraja bo'ladi?", a:"45–55°C", distractors:["10–15°C","80–90°C","20–25°C"] },
+  { q:"Jun yuvish agregatining ish unumdorligi qancha?", a:"400–500 kg/soat", distractors:["50–100 kg/soat","1000–2000 kg/soat","10–20 kg/soat"] },
+  { q:"Jun tolasining pishiqligi nima bilan aniqlanadi?", a:"Uzulish kuchi (dinamometr)", distractors:["Gigrometr","Optik mikroskop","Termometr"] },
+  { q:"Jun tolasining gigroskopikligi necha foizga etishi mumkin?", a:"30–35% gacha yetadi", distractors:["5–10% gacha","50–60% gacha","1–2% gacha"] },
+  { q:"Junni karbonizatsiya qilish nima degani?", a:"Jun tarkibidagi o'simlik qoldiqlarini tozalash jarayoni", distractors:["Junni bo'yash jarayoni","Junni quritish jarayoni","Junni kimyoviy yuvish"] },
+  { q:"Junni yuvishda qo'llaniladigan kimyoviy moddalar qaysi?", a:"Soda va sovun", distractors:["Xlorid kislota va glitserin","Sulfat kislota va efir","Spirt va atsetat"] },
+  { q:"Jun tolasining buraluvchanligi qanday bo'lishi mumkin?", a:"To'lqinsimon, qisqa buralgan yoki silliq", distractors:["Faqat silliq yoki tekis","Faqat to'lqinsimon","Spiral yoki halqasimon"] },
+  { q:"O'zbekistonda paxta xom ashyosi asosan qachon yig'iladi?", a:"Sentyabr – oktyabr", distractors:["Iyun – iyul","Yanvar – fevral","Mart – aprel"] },
+  // --- KANOP (86–100)
+  { q:"Kenaf (kanop) o'simligi qanday o'simlik turi?", a:"Gulhayridosh bir yillik o'simlik", distractors:["Ko'p yillik o'tsimon o'simlik","Oddiy daraxt turi","Ignabargli bir yillik"] },
+  { q:"Kanop poyasining balandligi necha metrgacha etishi mumkin?", a:"5 m gacha", distractors:["1–1.5 m gacha","10–12 m gacha","0.5 m gacha"] },
+  { q:"Kanop poyasining ko'ndalang kesimida tola qayerda bo'ladi?", a:"Po'stloq qismida", distractors:["O'zak (markaziy) qismida","Ildiz qismida","Gul qismida"] },
+  { q:"Kanop poyadan po'stloqni ajratuvchi agregat qaysi?", a:"Dekortikator, MT-100-K agregati", distractors:["SS-15A separatori","Linterlash mashinasi","Paxta terish mashinasi"] },
+  { q:"MT-100-K agregati necha qismdan iborat?", a:"3 qismdan", distractors:["2 qismdan","5 qismdan","7 qismdan"] },
+  { q:"Kanop poyasi necha xil usulda ivitiladi?", a:"2 xil", distractors:["3 xil","4 xil","5 xil"] },
+  { q:"Kenafni issiq suvda ivitish harorati necha daraja bo'ladi?", a:"35–40°C oralig'ida", distractors:["10–15°C oralig'ida","60–70°C oralig'ida","20–25°C oralig'ida"] },
+  { q:"Kenaf po'stlog'i issiq suvda necha kunda ivib tayyor bo'ladi?", a:"8–10 sutka", distractors:["1–2 sutka","30–40 sutka","20–25 sutka"] },
+  { q:"Kenaf (kanop) tolasi qanday xususiyatga ega?", a:"Gigroskopik", distractors:["Gidrofob","Termoplastik","Elektr o'tkazuvchan"] },
+  { q:"Kenaf (kanop) tolasi asosan nima uchun ishlatiladi?", a:"Qop, brezent, arqon, texnik matolar ishlab chiqarishda", distractors:["Kiyim-kechak tikishda","Tibbiy mato tayyorlashda","Elektr izolyatsiyasida"] },
+  { q:"Kenaf poyasining markaziy qismi nima deb ataladi?", a:"O'zak", distractors:["Po'stloq","Ildiz bo'g'imi","Gul rivojlanma"] },
+  { q:"Jun yuvishda ishlatiladigan 'suyuqlik moduli' nima?", a:"Jun va suv nisbatidir", distractors:["Suvning bosimi","Temperatura koeffitsienti","Harakatlanish tezligi"] },
+  { q:"Paxta tozalash sanoatining asosiy maqsadi nima?", a:"Paxtadan tolani ajratish", distractors:["Paxtani bo'yash","Paxta yog'ini olish","Paxtani quritish"] },
+  { q:"G'o'za poyasi (g'o'zapoya) nima uchun ishlatiladi?", a:"Yoqilg'i va qurilish materiallari", distractors:["Oziq-ovqat sifatida","Tibbiy maqsadda","Ipak ishlab chiqarishda"] },
+  { q:"Paxtani linterlashdan maqsad nima?", a:"Momiq ajratish", distractors:["Tolani uzaytirish","Chigitni quritish","Paxtani presslaш"] },
+];
+
+// Shuffle helper
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Build 4 variants: each variant = 25 questions from 100
+// Variant 1: 0–24, Variant 2: 25–49, Variant 3: 50–74, Variant 4: 75–99
+function buildVariant(v) {
+  const start = (v - 1) * 25;
+  const pool = ALL_QUESTIONS.slice(start, start + 25);
+  return shuffle(pool).map(q => {
+    // Build answer options: correct + 3 distractors, shuffled
+    const opts = shuffle([q.a, ...q.distractors.slice(0, 3)]);
+    return { q: q.q, correct: q.a, opts };
+  });
+}
+
+// State
+let currentVariant = null;
+let questions = [];
+let currentQ = 0;
+let answers = []; // null or index of chosen opt
+let score = 0;
+
+function selectVariant(v) {
+  currentVariant = v;
+  document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.variant-btn[data-v="${v}"]`).classList.add('active');
+  document.getElementById('start-btn').classList.add('show');
+}
+
+function startQuiz() {
+  questions = buildVariant(currentVariant);
+  answers = new Array(questions.length).fill(null);
+  currentQ = 0;
+  score = 0;
+
+  document.getElementById('selector-section').style.display = 'none';
+  const qs = document.getElementById('quiz-section');
+  qs.style.display = 'block';
+  qs.classList.add('show');
+
+  const badge = document.getElementById('variant-badge');
+  const vNames = ['', 'I Variant', 'II Variant', 'III Variant', 'IV Variant'];
+  badge.textContent = vNames[currentVariant];
+  badge.dataset.v = currentVariant;
+
+  document.getElementById('q-total').textContent = questions.length;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const answered = answers[currentQ] !== null;
+  const letters = ['A', 'B', 'C', 'D'];
+
+  document.getElementById('q-number').textContent = `Savol ${String(currentQ + 1).padStart(2, '0')}`;
+  document.getElementById('q-current').textContent = currentQ + 1;
+  document.getElementById('q-text').textContent = q.q;
+
+  const pct = ((currentQ + 1) / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('score-display').textContent = `✓ ${score}`;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => chooseAnswer(i);
+
+    if (answered) {
+      btn.disabled = true;
+      const chosen = answers[currentQ];
+      if (opt === q.correct) btn.classList.add('correct');
+      else if (i === chosen && opt !== q.correct) btn.classList.add('wrong');
+    }
+    opts.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  if (answered) {
+    const chosen = answers[currentQ];
+    const isCorrect = q.opts[chosen] === q.correct;
+    fb.className = `feedback ${isCorrect ? 'correct' : 'wrong'} show`;
+    fb.textContent = isCorrect ? `✓ To'g'ri! Javob: ${q.correct}` : `✗ Noto'g'ri. To'g'ri javob: ${q.correct}`;
+  } else {
+    fb.className = 'feedback';
+    fb.textContent = '';
+  }
+
+  document.getElementById('prev-btn').disabled = currentQ === 0;
+  document.getElementById('next-btn').disabled = !answered;
+
+  const nextBtn = document.getElementById('next-btn');
+  if (currentQ === questions.length - 1 && answered) {
+    nextBtn.textContent = 'Yakunlash ✓';
+    nextBtn.onclick = showResults;
+  } else {
+    nextBtn.textContent = 'Keyingi →';
+    nextBtn.onclick = nextQ;
+  }
+}
+
+function chooseAnswer(idx) {
+  if (answers[currentQ] !== null) return;
+  answers[currentQ] = idx;
+
+  const q = questions[currentQ];
+  const isCorrect = q.opts[idx] === q.correct;
+  if (isCorrect) score++;
+
+  renderQuestion();
+}
+
+function nextQ() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-section').style.display = 'none';
+  const rs = document.getElementById('result-section');
+  rs.style.display = 'block';
+  rs.classList.add('show');
+
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+
+  document.getElementById('result-score').textContent = pct + '%';
+  document.getElementById('stat-correct').textContent = score;
+  document.getElementById('stat-wrong').textContent = total - score;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('result-sub').textContent = `${total} ta savoldan ${score} tasiga to'g'ri javob`;
+
+  let emoji, title;
+  if (pct >= 90) { emoji = '🏆'; title = 'A\'lo natija!'; }
+  else if (pct >= 75) { emoji = '🎯'; title = 'Yaxshi natija!'; }
+  else if (pct >= 60) { emoji = '👍'; title = 'Qoniqarli'; }
+  else { emoji = '📚'; title = 'Ko\'proq o\'qish kerak'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+}
+
+function showReview() {
+  const list = document.getElementById('review-list');
+  list.classList.remove('hidden');
+  list.innerHTML = '<h3 style="font-family:Oswald,sans-serif;font-size:18px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">Ko\'rib chiqish</h3>';
+
+  questions.forEach((q, i) => {
+    const chosen = answers[i];
+    const isCorrect = chosen !== null && q.opts[chosen] === q.correct;
+    const div = document.createElement('div');
+    div.className = `review-item ${isCorrect ? 'review-correct' : 'review-wrong'}`;
+
+    const icon = isCorrect ? '✓' : '✗';
+    const chosenText = chosen !== null ? q.opts[chosen] : '(javob berilmagan)';
+
+    div.innerHTML = `
+      <div class="review-q">${i + 1}. ${q.q}</div>
+      <div class="review-answers">
+        ${!isCorrect ? `<div class="review-wrong-ans">${icon} Siz: ${chosenText}</div>` : ''}
+        <div class="review-correct-ans">✓ To'g'ri: ${q.correct}</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function retakeQuiz() {
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('review-list').classList.add('hidden');
+  startQuiz();
+}
+
+function backToMenu() {
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('review-list').classList.add('hidden');
+  document.getElementById('selector-section').style.display = 'block';
+  document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('start-btn').classList.remove('show');
+  currentVariant = null;
+}
+</script>
+</body>
+</html>
